@@ -1,0 +1,15 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno (contraseñas de base de datos)
+.env
+
+# Archivos de build de React
+/build
+/dist
+
+# Logs
+*.log
+
+# Windows
+Thumbs.db
