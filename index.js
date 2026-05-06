@@ -2,6 +2,8 @@
 
 //  Importamos express
 const express = require('express');
+// Importamos las rutas de medicamentos
+const medicamentosRoutes = require('./src/routes/medicamentos.routes')
 
 // Importamos la conexión a MySQL
 const conexion = require('./src/config/database');
@@ -9,9 +11,11 @@ const conexion = require('./src/config/database');
 // Creamos el servidor
 const app = express();
 const PORT = 3000;
-
 // Le decimos a Express que entienda JSON
 app.use(express.json());
+
+// Usamos las rutas de medicamentos
+app.use('/medicamentos', medicamentosRoutes)
 
 //  Ruta principal de prueba
 app.get('/', (req, res) => {
