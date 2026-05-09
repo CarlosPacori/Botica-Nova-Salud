@@ -6,93 +6,92 @@ const express = require('express')
 // Creamos el enrutador
 const router = express.Router()
 
-// Importamos la conexión a MySQL
-const conexion = require('../config/database')
+// Importamos la conexión a MySQL 
+// const conexion = require('../config/database')
 
-// GET /medicamentos - Trae todos los medicamentos
-router.get('/', (req, res) => {
-    const sql = 'SELECT * FROM medicamentos'
-    
-    conexion.query(sql, (error, resultados) => {
-        if (error) {
-            return res.status(500).json({ mensaje: 'Error en el servidor', error })
-        }
-        res.json(resultados)
-    })
+// Importamos el modelo Medicamento
+const Medicamento = require('../models/medicamento')
+
+// Importamos Sequelize y el operador Op para consultas avanzadas
+const { Op } = require('sequelize')
+const sequelize = require('../config/database')
+
+
+// GET /medicamentos - Trae todos los medicamentos 
+//async → le dice a la función que va a hacer operaciones que toman tiempo
+router.get('/', async (req, res) => { 
+    try {
+        const medicamentos = await Medicamento.findAll() //findAll() → es el método de Sequelize que reemplaza SELECT * FROM medicamentos.
+        res.json(medicamentos)
+    } catch (error) {
+        res.status(500).json({ mensaje: 'Error en el servidor', error })
+    }
 })
 
-// GET /medicamentos/stock-bajo - Trae medicamentos con stock bajo
-router.get('/stock-bajo', (req, res) => {
-    const sql = 'SELECT * FROM medicamentos WHERE stock < stock_minimo'
 
-    conexion.query(sql, (error, resultados) => {
-        if (error) {
-            return res.status(500).json({ mensaje: 'Error en el servidor', error })
-        }
-        res.json(resultados)
-    })
+// GET /medicamentos/stock-bajo
+router.get('/stock-bajo', async (req, res) => {
+    try {
+        const medicamentos = await Medicamento.findAll({
+            where: {
+                stock: { [Op.lt]: sequelize.col('stock_minimo') } // Op.lt → significa less than → "menor que" en español exatamente lo mismo que WHERE stock < stock_minimo
+            }
+        })
+        res.json(medicamentos)
+    } catch (error) {
+        res.status(500).json({ mensaje: 'Error en el servidor', error })
+    }
 })
 
-// GET /medicamentos/:id - Trae un medicamento por id
-router.get('/:id', (req, res) => {
-    const { id } = req.params
-    const sql = 'SELECT * FROM medicamentos WHERE id = ?'
-
-    conexion.query(sql, [id], (error, resultados) => {
-        if (error) {
-            return res.status(500).json({ mensaje: 'Error en el servidor', error })
-        }
-        if (resultados.length === 0) {
+// GET /medicamentos/:id
+router.get('/:id', async (req, res) => {
+    try {
+        const medicamento = await Medicamento.findByPk(req.params.id) //findByPk() → es el método de Sequelize que reemplaza SELECT * FROM medicamentos WHERE id = ?
+        if (!medicamento) {
             return res.status(404).json({ mensaje: 'Medicamento no encontrado' })
         }
-        res.json(resultados[0])
-    })
+        res.json(medicamento)
+    } catch (error) {
+        res.status(500).json({ mensaje: 'Error en el servidor', error })
+    }
 })
 
-// POST /medicamentos - Crea un medicamento nuevo
-router.post('/', (req, res) => {
-    const { nombre, descripcion, precio, stock, stock_minimo } = req.body
-    const sql = 'INSERT INTO medicamentos (nombre, descripcion, precio, stock, stock_minimo) VALUES (?, ?, ?, ?, ?)'
-
-    conexion.query(sql, [nombre, descripcion, precio, stock, stock_minimo], (error, resultados) => {
-        if (error) {
-            return res.status(500).json({ mensaje: 'Error en el servidor', error })
-        }
-        res.status(201).json({ mensaje: 'Medicamento creado correctamente', id: resultados.insertId })
-    })
+// POST /medicamentos
+router.post('/', async (req, res) => {
+    try {
+        const medicamento = await Medicamento.create(req.body) //create() → es el método de Sequelize que reemplaza INSERT INTO medicamentos (nombre, descripcion, precio, stock, stock_minimo) VALUES (?, ?, ?, ?, ?)
+        res.status(201).json({ mensaje: 'Medicamento creado correctamente', id: medicamento.id })
+    } catch (error) {
+        res.status(500).json({ mensaje: 'Error en el servidor', error })
+    }
 })
 
-// PUT /medicamentos/:id - Actualiza un medicamento
-router.put('/:id', (req, res) => {
-    const { id } = req.params
-    const { nombre, descripcion, precio, stock, stock_minimo } = req.body
-    const sql = 'UPDATE medicamentos SET nombre = ?, descripcion = ?, precio = ?, stock = ?, stock_minimo = ? WHERE id = ?'
-
-    conexion.query(sql, [nombre, descripcion, precio, stock, stock_minimo, id], (error, resultados) => {
-        if (error) {
-            return res.status(500).json({ mensaje: 'Error en el servidor', error })
-        }
-        if (resultados.affectedRows === 0) {
+// PUT /medicamentos/:id
+router.put('/:id', async (req, res) => {
+    try {
+        const medicamento = await Medicamento.findByPk(req.params.id)
+        if (!medicamento) {
             return res.status(404).json({ mensaje: 'Medicamento no encontrado' })
         }
+        await medicamento.update(req.body)
         res.json({ mensaje: 'Medicamento actualizado correctamente' })
-    })
+    } catch (error) {
+        res.status(500).json({ mensaje: 'Error en el servidor', error })
+    }
 })
 
-// DELETE /medicamentos/:id - Elimina un medicamento
-router.delete('/:id', (req, res) => {
-    const { id } = req.params
-    const sql = 'DELETE FROM medicamentos WHERE id = ?'
-
-    conexion.query(sql, [id], (error, resultados) => {
-        if (error) {
-            return res.status(500).json({ mensaje: 'Error en el servidor', error })
-        }
-        if (resultados.affectedRows === 0) {
+// DELETE /medicamentos/:id
+router.delete('/:id', async (req, res) => {
+    try {
+        const medicamento = await Medicamento.findByPk(req.params.id)
+        if (!medicamento) {
             return res.status(404).json({ mensaje: 'Medicamento no encontrado' })
         }
+        await medicamento.destroy()
         res.json({ mensaje: 'Medicamento eliminado correctamente' })
-    })
+    } catch (error) {
+        res.status(500).json({ mensaje: 'Error en el servidor', error })
+    }
 })
 
 // Exportamos el router

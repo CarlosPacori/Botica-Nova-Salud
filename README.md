@@ -10,4 +10,3 @@ Sistema web de gestión de inventario y ventas
 - WHERE es obligatorio en UPDATE y DELETE para no afectar toda la tabla
 - affectedRows detecta si el id existe o no
 - En ventas primero verifico stock, luego registro la venta, luego descuento
-
