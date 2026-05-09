@@ -21,6 +21,18 @@ router.get('/', (req, res) => {
     })
 })
 
+// GET /medicamentos/stock-bajo - Trae medicamentos con stock bajo
+router.get('/stock-bajo', (req, res) => {
+    const sql = 'SELECT * FROM medicamentos WHERE stock < stock_minimo'
+
+    conexion.query(sql, (error, resultados) => {
+        if (error) {
+            return res.status(500).json({ mensaje: 'Error en el servidor', error })
+        }
+        res.json(resultados)
+    })
+})
+
 // GET /medicamentos/:id - Trae un medicamento por id
 router.get('/:id', (req, res) => {
     const { id } = req.params
