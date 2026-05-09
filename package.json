@@ -4,7 +4,8 @@
   "description": "Sistema web de gestión de inventario y ventas",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -13,7 +14,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs", 
+  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/CarlosPacori/Botica-Nova-Salud/issues"
   },
@@ -21,6 +22,7 @@
   "dependencies": {
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "mysql2": "^3.22.1"
+    "mysql2": "^3.22.1",
+    "nodemon": "^3.1.14"
   }
 }
