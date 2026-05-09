@@ -2,13 +2,15 @@
 
 //  Importamos express
 const express = require('express');
+// Importamos las rutas de autenticación
+const authRoutes = require('./src/routes/auth.routes')
 // Importamos las rutas de medicamentos
 const medicamentosRoutes = require('./src/routes/medicamentos.routes')
 // Importamos las rutas de ventas
 const ventasRoutes = require('./src/routes/ventas.routes')
 
 // Importamos la conexión a MySQL
-const conexion = require('./src/config/database');
+//const conexion = require('./src/config/database');
 
 // Creamos el servidor
 const app = express();
@@ -16,6 +18,8 @@ const PORT = 3000;
 // Le decimos a Express que entienda JSON
 app.use(express.json());
 
+// Usamos las rutas de autenticación
+app.use('/auth', authRoutes)
 // Usamos las rutas de medicamentos
 app.use('/medicamentos', medicamentosRoutes)
 // Usamos las rutas de ventas

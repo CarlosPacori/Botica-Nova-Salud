@@ -2,7 +2,8 @@
 
 // Importamos express
 const express = require('express')
-
+// Importamos el middleware
+const verificarToken = require('../middlewares/auth.middleware')
 // Creamos el enrutador
 const router = express.Router()
 
@@ -16,10 +17,11 @@ const Medicamento = require('../models/medicamento')
 const { Op } = require('sequelize')
 const sequelize = require('../config/database')
 
+//  Ahora hay que agregar verificarToken a cada ruta para protegerla
 
 // GET /medicamentos - Trae todos los medicamentos 
 //async → le dice a la función que va a hacer operaciones que toman tiempo
-router.get('/', async (req, res) => { 
+router.get('/',verificarToken, async (req, res) => { 
     try {
         const medicamentos = await Medicamento.findAll() //findAll() → es el método de Sequelize que reemplaza SELECT * FROM medicamentos.
         res.json(medicamentos)
@@ -30,7 +32,7 @@ router.get('/', async (req, res) => {
 
 
 // GET /medicamentos/stock-bajo
-router.get('/stock-bajo', async (req, res) => {
+router.get('/stock-bajo',verificarToken, async (req, res) => {
     try {
         const medicamentos = await Medicamento.findAll({
             where: {
@@ -44,7 +46,7 @@ router.get('/stock-bajo', async (req, res) => {
 })
 
 // GET /medicamentos/:id
-router.get('/:id', async (req, res) => {
+router.get('/:id',verificarToken, async (req, res) => {
     try {
         const medicamento = await Medicamento.findByPk(req.params.id) //findByPk() → es el método de Sequelize que reemplaza SELECT * FROM medicamentos WHERE id = ?
         if (!medicamento) {
@@ -57,7 +59,7 @@ router.get('/:id', async (req, res) => {
 })
 
 // POST /medicamentos
-router.post('/', async (req, res) => {
+router.post('/',verificarToken, async (req, res) => {
     try {
         const medicamento = await Medicamento.create(req.body) //create() → es el método de Sequelize que reemplaza INSERT INTO medicamentos (nombre, descripcion, precio, stock, stock_minimo) VALUES (?, ?, ?, ?, ?)
         res.status(201).json({ mensaje: 'Medicamento creado correctamente', id: medicamento.id })
@@ -67,7 +69,7 @@ router.post('/', async (req, res) => {
 })
 
 // PUT /medicamentos/:id
-router.put('/:id', async (req, res) => {
+router.put('/:id',verificarToken, async (req, res) => {
     try {
         const medicamento = await Medicamento.findByPk(req.params.id)
         if (!medicamento) {
@@ -81,7 +83,7 @@ router.put('/:id', async (req, res) => {
 })
 
 // DELETE /medicamentos/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id',verificarToken, async (req, res) => {
     try {
         const medicamento = await Medicamento.findByPk(req.params.id)
         if (!medicamento) {
