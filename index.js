@@ -2,6 +2,8 @@
 
 //  Importamos express
 const express = require('express');
+//Importamos cors para permitir conexiones desde el frontend React  
+const cors = require('cors')
 // Importamos las rutas de autenticación
 const authRoutes = require('./src/routes/auth.routes')
 // Importamos las rutas de medicamentos
@@ -17,6 +19,10 @@ const app = express();
 const PORT = 3000;
 // Le decimos a Express que entienda JSON
 app.use(express.json());
+// Configuramos CORS para permitir conexiones desde el frontend React
+app.use(cors({
+    origin: 'http://localhost:5173' // solo el frontend React puede conectarse
+}))
 
 // Usamos las rutas de autenticación
 app.use('/auth', authRoutes)
