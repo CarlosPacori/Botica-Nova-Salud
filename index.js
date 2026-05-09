@@ -4,6 +4,8 @@
 const express = require('express');
 // Importamos las rutas de medicamentos
 const medicamentosRoutes = require('./src/routes/medicamentos.routes')
+// Importamos las rutas de ventas
+const ventasRoutes = require('./src/routes/ventas.routes')
 
 // Importamos la conexión a MySQL
 const conexion = require('./src/config/database');
@@ -16,7 +18,8 @@ app.use(express.json());
 
 // Usamos las rutas de medicamentos
 app.use('/medicamentos', medicamentosRoutes)
-
+// Usamos las rutas de ventas
+app.use('/ventas', ventasRoutes)
 //  Ruta principal de prueba
 app.get('/', (req, res) => {
     res.json({ 
